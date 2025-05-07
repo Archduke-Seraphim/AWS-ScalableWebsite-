@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Records Home</title>
+    <style>
+        body {
+            background-color: lightblue;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2 {
+            color: #003366;
+            margin-top: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #0047AB;
+            font-size: 18px;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: #002c70;
+        }
+        #flash-message {
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        #login-status {
+            margin-top: 30px;
+            font-size: 18px;
+        }
+        button {
+            background-color: #0047AB;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #003366;
+        }
+    </style>
+</head>
+<body>
+
+<div id="flash-message"></div>
+
+<h1>Welcome to the Student Records Portal</h1>
+
+<h2>Navigation</h2>
+<ul>
+    <li><a href="/signup.html">Sign Up</a></li>
+    <li><a href="/login.html">Log In</a></li>
+    <li><a href="/students-list.html">View All Students</a></li>
+    <li><a href="/add-student.html">Add a New Student</a></li>
+    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">Admin Passwords</a>
+
+</ul>
+
+<div id="login-status"></div>
+
+<script>
+async function checkLoginStatus() {
+    try {
+        const response = await fetch('/check-login');
+        const result = await response.json();
+        const loginStatusDiv = document.getElementById('login-status');
+
+        if (result.loggedIn) {
+            loginStatusDiv.innerHTML = `
+                <p style="margin-top:20px; font-size:20px;">Welcome, ${result.username}!</p>
+                <button onclick="logout()">Logout</button>
+            `;
+        } else {
+            loginStatusDiv.innerHTML = '';
+        }
+    } catch (error) {
+        console.error('Error checking login:', error);
+    }
+}
+
+async function logout() {
+    await fetch('/logout');
+    window.location.reload();
+}
+
+window.onload = checkLoginStatus;
+</script>
+
+</body>
+</html>
