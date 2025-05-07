@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Student Record</title>
+</head>
+<body>
+  <h1>My Record</h1>
+
+  <div id="record-section">
+    <!-- Record details will load here dynamically -->
+  </div>
+
+  <button onclick="logout()">Logout</button>
+
+  <script>
+    async function loadMyRecord() {
+      const res = await fetch('/my-record');
+      if (res.ok) {
+        const student = await res.json();
+
+        const container = document.getElementById('record-section');
+        container.innerHTML = `
+          <form id="edit-form">
+            <input type="hidden" name="id" value="${student.id}">
+            <label>Name: <input type="text" name="name" value="${student.name}" required></label><br>
+            <label>Address: <input type="text" name="address" value="${student.address}" required></label><br>
+            <label>City: <input type="text" name="city" value="${student.city}" required></label><br>
+            <label>State: <input type="text" name="state" value="${student.state}" required></label><br>
+            <label>Email: <input type="email" name="email" value="${student.email}" required></label><br>
+            <label>Phone: <input type="text" name="phone" value="${student.phone}" required></label><br><br>
+            <button type="submit">Save Changes</button>
+          </form>
+        `;
+
+        document.getElementById('edit-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const data = new URLSearchParams(formData);
+
+          const updateRes = await fetch('/update-record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: data
+          });
+
+          if (updateRes.ok) {
+            alert('Record updated successfully!');
+            loadMyRecord();
+          } else {
+            alert('Failed to update record.');
+          }
+        });
+
+      } else {
+        document.getElementById('record-section').innerHTML = `<p style="color:red;">Not logged in or no record found. <a href="/login.html">Login</a></p>`;
+      }
+    }
+
+    async function logout() {
+      await fetch('/logout');
+      window.location.href = '/';
+    }
+
+    loadMyRecord();
+  </script>
+
+</body>
+</html>
