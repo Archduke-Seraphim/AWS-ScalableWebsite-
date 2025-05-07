@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Student - XYZ University</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    header {
+      background-color: #333;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-size: 18px;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    form {
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    input[type="text"], input[type="email"], input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 16px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #flash-message {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>XYZ University</h1>
+  <nav>
+    <a href="/index.html">Home</a>
+    <a href="/students-list.html">Students List</a>
+  </nav>
+</header>
+
+<h2>Edit Student Information</h2>
+
+<form id="edit-student-form">
+  <input type="text" name="name" placeholder="Name" required>
+  <input type="text" name="address" placeholder="Address" required>
+  <input type="text" name="city" placeholder="City" required>
+  <input type="text" name="state" placeholder="State" required>
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="tel" name="phone" placeholder="Phone" required>
+  <button type="submit">Save Changes</button>
+</form>
+
+<div id="flash-message"></div>
+
+<script>
+const form = document.getElementById('edit-student-form');
+const flash = document.getElementById('flash-message');
+const params = new URLSearchParams(window.location.search);
+const studentId = params.get('id');
+
+// Preload existing data
+async function loadStudent() {
+  try {
+    const res = await fetch(`/student/${studentId}`);
+    const student = await res.json();
+
+    form.name.value = student.name;
+    form.address.value = student.address;
+    form.city.value = student.city;
+    form.state.value = student.state;
+    form.email.value = student.email;
+    form.phone.value = student.phone;
+  } catch (error) {
+    flash.innerText = "Failed to load student data.";
+    console.error(error);
+  }
+}
+
+// Handle form submit
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+
+  try {
+    const res = await fetch(`/update-student/${studentId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      flash.innerText = "Student updated successfully!";
+      setTimeout(() => {
+        window.location.href = '/students-list.html';
+      }, 1500);
+    } else {
+      flash.innerText = "Failed to update student.";
+    }
+  } catch (error) {
+    console.error('Update error:', error);
+    flash.innerText = "Error occurred while updating.";
+  }
+});
+
+// Load the student record when page loads
+loadStudent();
+</script>
+
+</body>
+</html>
