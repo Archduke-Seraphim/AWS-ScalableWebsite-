@@ -15,7 +15,6 @@ module.exports = pool;
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000; // Optional: change default port if needed
-const pool = require('./db');
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
