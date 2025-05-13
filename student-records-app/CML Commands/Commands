@@ -23,3 +23,5 @@ nano login.html
 nano my-record.html
 nano signup.html
 nano students-list.html
+
+npm start
